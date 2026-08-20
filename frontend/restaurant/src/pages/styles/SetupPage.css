@@ -1,0 +1,16 @@
+.setup-layout {
+  padding: 40px 0 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.setup-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
+}
+
+.setup-card h1 {
+  font-size: 26px;
+  margin: 6px 0 6px;
+}

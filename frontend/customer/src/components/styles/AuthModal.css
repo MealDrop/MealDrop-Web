@@ -1,0 +1,61 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 31, 26, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 380px;
+  padding: 28px;
+  position: relative;
+}
+
+.modal h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  font-size: 20px;
+  color: var(--muted);
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 12px 0 6px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--emerald);
+}
+
+.field-error {
+  color: var(--terracotta);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.modal .btn {
+  margin-top: 18px;
+}

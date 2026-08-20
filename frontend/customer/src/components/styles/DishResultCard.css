@@ -1,0 +1,37 @@
+.dish-result {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  width: 100%;
+  text-align: left;
+  transition: box-shadow 0.15s ease;
+}
+
+.dish-result:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.dish-result-body {
+  flex: 1;
+}
+
+.dish-result-body h4 {
+  font-size: 14.5px;
+}
+
+.dish-result-price {
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.veg-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}
+
+.veg-dot.veg { border-color: #1f8a3d; background: #1f8a3d; }
+.veg-dot.nonveg { border-color: var(--terracotta); background: var(--terracotta); }
