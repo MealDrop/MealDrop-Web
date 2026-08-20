@@ -1,0 +1,2 @@
+.support-contacts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.support-contact { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--emerald); font-weight: 500; }

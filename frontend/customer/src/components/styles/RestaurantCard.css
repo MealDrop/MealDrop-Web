@@ -1,0 +1,47 @@
+.rest-card {
+  display: block;
+  padding: 20px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  animation: fadeUp 0.25s ease;
+}
+
+.rest-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.rest-card.matched {
+  border-color: var(--emerald);
+  box-shadow: 0 0 0 2px var(--emerald-soft);
+}
+
+.rest-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.avatar-emerald { background: var(--emerald); }
+.avatar-gold { background: var(--gold); color: var(--ink); }
+.avatar-terracotta { background: var(--terracotta); }
+.avatar-navy { background: #2c3e63; }
+.avatar-plum { background: #6b3a5e; }
+
+.rest-card-name {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.rest-card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rest-price {
+  font-size: 13.5px;
+  color: var(--gold);
+  font-weight: 700;
+}

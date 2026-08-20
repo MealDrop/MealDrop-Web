@@ -1,0 +1,130 @@
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 31, 26, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-panel {
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawer-title {
+  font-size: 17px;
+  flex: 1;
+  text-align: center;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px;
+}
+
+.drawer-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.drawer-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.drawer-line:last-child { border-bottom: none; }
+.drawer-line-name { font-size: 14.5px; font-weight: 500; margin-bottom: 3px; }
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--emerald);
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.stepper button { color: #fff; font-size: 16px; font-weight: 700; }
+
+.drawer-footer {
+  padding: 18px 22px 22px;
+  border-top: 1px solid var(--border);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 5px 0;
+  color: var(--muted);
+}
+
+.summary-total {
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+  padding-top: 10px;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.drawer-footer .btn, .drawer-body .btn { margin-top: 14px; }
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream);
+}
+
+.field-input:focus { outline: none; border-color: var(--emerald); }
+
+.field-error {
+  color: var(--terracotta);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.delivery-hint {
+  font-size: 12px;
+  margin-top: -2px;
+}
