@@ -1,0 +1,144 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(34, 31, 26, 0.68);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: modalFade 0.16s ease;
+}
+
+.modal-backdrop .modal {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 25px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: modalUp 0.2s ease;
+}
+
+.modal-backdrop .modal h2 {
+  margin: 4px 45px 18px 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.modal-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 19px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+}
+
+.auth-tab {
+  min-height: 34px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.auth-tab:hover {
+  color: var(--ink);
+}
+
+.auth-tab.active {
+  background: var(--emerald);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.modal form .field-label {
+  margin-top: 2px;
+}
+
+.modal form .field-input {
+  margin-bottom: 13px;
+}
+
+.modal form .btn {
+  min-height: 42px;
+}
+
+.modal .field-hint {
+  margin-top: -5px;
+}
+
+.modal .field-error {
+  margin-top: -4px;
+  margin-bottom: 7px;
+}
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 10px;
+  }
+
+  .modal-backdrop .modal {
+    width: 100%;
+    max-height: calc(100vh - 20px);
+    padding: 21px 18px;
+    border-radius: 18px 18px 12px 12px;
+  }
+
+  .modal-backdrop .modal h2 {
+    font-size: 23px;
+  }
+}

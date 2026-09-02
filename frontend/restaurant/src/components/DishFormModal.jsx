@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { ImagePlus, X } from "lucide-react";
+import * as api from "../api.js";
 
-const CATEGORIES = [
+const CATEGORY_SUGGESTIONS = [
   "Starter",
   "Main",
   "Bread",
@@ -23,9 +25,30 @@ export default function DishFormModal({ initial, onClose, onSave }) {
     },
   );
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   function set(key, value) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function handleFileSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError("");
+    setUploading(true);
+    try {
+      const url = await api.uploadImage(file);
+      set("imageUrl", url);
+    } catch (err) {
+      setUploadError(
+        err.response?.data?.message ||
+          "Could not upload the photo — try again.",
+      );
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   }
 
   async function submit(e) {
@@ -45,6 +68,40 @@ export default function DishFormModal({ initial, onClose, onSave }) {
         <h2>{initial ? "Edit dish" : "Add a dish"}</h2>
 
         <form onSubmit={submit}>
+          <label className="field-label">Photo (optional)</label>
+          <div className="dish-photo-picker">
+            {form.imageUrl ? (
+              <div className="dish-photo-preview">
+                <img src={form.imageUrl} alt="" />
+                <button
+                  type="button"
+                  className="dish-photo-remove"
+                  onClick={() => set("imageUrl", "")}
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ) : (
+              <label className="dish-photo-upload">
+                {uploading ? (
+                  "Uploading..."
+                ) : (
+                  <>
+                    <ImagePlus size={18} /> Upload photo
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  disabled={uploading}
+                  hidden
+                />
+              </label>
+            )}
+          </div>
+          {uploadError && <p className="field-error">{uploadError}</p>}
+
           <label className="field-label">Dish name</label>
           <input
             className="field-input"
@@ -74,28 +131,21 @@ export default function DishFormModal({ initial, onClose, onSave }) {
               />
             </div>
             <div>
-              <label className="field-label">Category</label>
-              <select
+              <label className="field-label">Category / type</label>
+              <input
                 className="field-input"
+                list="dish-category-suggestions"
+                placeholder="e.g. Starter, Main, Combo..."
                 value={form.category}
                 onChange={(e) => set("category", e.target.value)}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
+              />
+              <datalist id="dish-category-suggestions">
+                {CATEGORY_SUGGESTIONS.map((c) => (
+                  <option key={c} value={c} />
                 ))}
-              </select>
+              </datalist>
             </div>
           </div>
-
-          <label className="field-label">Image URL (optional)</label>
-          <input
-            className="field-input"
-            placeholder="https://... — leave blank to show a placeholder"
-            value={form.imageUrl}
-            onChange={(e) => set("imageUrl", e.target.value)}
-          />
 
           <div className="form-row" style={{ marginTop: 14 }}>
             <label className="toggle-row">
@@ -119,7 +169,7 @@ export default function DishFormModal({ initial, onClose, onSave }) {
           <button
             className="btn btn-primary btn-block"
             style={{ marginTop: 18 }}
-            disabled={saving}
+            disabled={saving || uploading}
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Add dish"}
           </button>

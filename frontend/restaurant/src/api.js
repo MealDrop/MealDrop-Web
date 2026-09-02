@@ -6,41 +6,56 @@ const client = axios.create({
 });
 
 export function setAuthToken(token) {
-  if (token) client.defaults.headers.common.Authorization = `Bearer ${token}`;
-  else delete client.defaults.headers.common.Authorization;
-}
-
-export function isBackendUnreachable(err) {
-  return !err.response;
+  if (token) {
+    client.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete client.defaults.headers.common.Authorization;
+  }
 }
 
 const withId = (obj) => (obj ? { ...obj, id: obj._id || obj.id } : obj);
 
-// ---- auth ----
-export const requestOtp = (phone) =>
-  client.post("/auth/request-otp", { phone }).then((r) => r.data);
-
-export const verifyOtp = (phone, otp, name, role) =>
-  client.post("/auth/verify-otp", { phone, otp, name, role }).then((r) => ({
-    token: r.data.token,
-    user: withId(r.data.user),
-    restaurant: withId(r.data.restaurant),
-  }));
-
-export const getMe = () =>
+export const requestOtp = (email, mode = "login") =>
   client
-    .get("/auth/me")
+    .post("/auth/request-otp", {
+      email,
+      mode,
+    })
+    .then((r) => r.data);
+
+export const verifyOtp = (
+  email,
+  signupDetails = {},
+  ownerRole = "owner",
+  mode = "login",
+) =>
+  client
+    .post("/auth/verify-otp", {
+      email,
+      otp: signupDetails.otp || "",
+      name: signupDetails.name || "",
+      phone: signupDetails.phone || "",
+      address: signupDetails.address || "",
+      role: ownerRole,
+      mode,
+    })
     .then((r) => ({
+      token: r.data.token,
       user: withId(r.data.user),
       restaurant: withId(r.data.restaurant),
     }));
+
+export const getMe = () =>
+  client.get("/auth/me").then((r) => ({
+    user: withId(r.data.user),
+    restaurant: withId(r.data.restaurant),
+  }));
 
 export const updateProfile = (patch) =>
   client.put("/auth/profile", patch).then((r) => withId(r.data.user));
 
 export const deleteMyAccount = () => client.delete("/auth/account");
 
-// ---- restaurant ----
 export const createRestaurant = (payload) =>
   client.post("/restaurants", payload).then((r) => withId(r.data));
 
@@ -53,7 +68,6 @@ export const getRestaurant = (id) =>
     dishes: r.data.dishes.map(withId),
   }));
 
-// ---- dishes ----
 export const getDishes = (restaurantId) =>
   client
     .get(`/dishes/restaurant/${restaurantId}`)
@@ -67,13 +81,52 @@ export const updateDish = (id, patch) =>
 
 export const deleteDish = (id) => client.delete(`/dishes/${id}`);
 
-// ---- orders ----
+export const uploadImage = (file) => {
+  const formData = new FormData();
+
+  formData.append("image", file);
+
+  return client
+    .post("/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((r) => r.data.url);
+};
+
 export const getRestaurantOrders = (restaurantId) =>
   client
     .get(`/orders/restaurant/${restaurantId}`)
     .then((r) => r.data.map(withId));
 
-export const updateOrderStatus = (id, status) =>
-  client.put(`/orders/${id}/status`, { status }).then((r) => withId(r.data));
+export const updateOrderStatus = (id, status, note = "") =>
+  client
+    .put(`/orders/${id}/status`, {
+      status,
+      note,
+    })
+    .then((r) => withId(r.data));
+
+export const acceptOrder = (id) =>
+  client.put(`/orders/${id}/accept`).then((r) => withId(r.data));
+
+export const rejectOrder = (id, note = "") =>
+  client.put(`/orders/${id}/reject`, { note }).then((r) => withId(r.data));
+
+export const startPreparing = (id) =>
+  client.put(`/orders/${id}/preparing`).then((r) => withId(r.data));
+
+export const markReady = (id) =>
+  client.put(`/orders/${id}/ready`).then((r) => withId(r.data));
+
+export const pickUpOrder = (id) =>
+  client.put(`/orders/${id}/picked-up`).then((r) => withId(r.data));
+
+export const markOnTheWay = (id) =>
+  client.put(`/orders/${id}/on-the-way`).then((r) => withId(r.data));
+
+export const markDelivered = (id) =>
+  client.put(`/orders/${id}/delivered`).then((r) => withId(r.data));
 
 export default client;

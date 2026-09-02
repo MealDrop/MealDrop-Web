@@ -1,16 +1,60 @@
 .setup-layout {
-  padding: 40px 0 60px;
-  display: flex;
-  justify-content: center;
+  width: min(calc(100% - 40px), 760px);
+  margin: 0 auto;
+  padding: 38px 0 70px;
 }
 
 .setup-card {
-  width: 100%;
-  max-width: 520px;
-  padding: 32px;
+  padding: 25px;
 }
 
 .setup-card h1 {
-  font-size: 26px;
-  margin: 6px 0 6px;
+  margin: 4px 0 7px;
+  color: var(--ink);
+  font-size: 29px;
+}
+
+.setup-card > .muted {
+  margin-bottom: 20px;
+}
+
+.setup-card .field-label {
+  margin-top: 2px;
+}
+
+.setup-card .field-input {
+  margin-bottom: 13px;
+}
+
+.setup-card .form-row {
+  margin-top: 2px;
+}
+
+.setup-card .form-row .field-input {
+  margin-bottom: 0;
+}
+
+.setup-card .btn-primary {
+  min-height: 43px;
+}
+
+@media (max-width: 650px) {
+  .setup-layout {
+    width: min(calc(100% - 28px), 760px);
+    padding-top: 23px;
+  }
+
+  .setup-card {
+    padding: 20px 18px;
+  }
+
+  .setup-card h1 {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 450px) {
+  .setup-layout {
+    width: calc(100% - 22px);
+  }
 }

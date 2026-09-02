@@ -15,12 +15,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    if (token === "demo-token") {
-      const saved = localStorage.getItem("mealdrop_demo_user");
-      if (saved) setUser(JSON.parse(saved));
-      setLoading(false);
-      return;
-    }
     api.setAuthToken(token);
     api
       .getMe()
@@ -31,26 +25,20 @@ export function AuthProvider({ children }) {
 
   function login({ token, user }) {
     localStorage.setItem("mealdrop_token", token);
-    if (token === "demo-token")
-      localStorage.setItem("mealdrop_demo_user", JSON.stringify(user));
-    else api.setAuthToken(token);
+    api.setAuthToken(token);
     setToken(token);
     setUser(user);
   }
 
   function logout() {
     localStorage.removeItem("mealdrop_token");
-    localStorage.removeItem("mealdrop_demo_user");
     api.setAuthToken(null);
     setToken(null);
     setUser(null);
   }
 
   function updateUser(patch) {
-    const next = { ...user, ...patch };
-    setUser(next);
-    if (token === "demo-token")
-      localStorage.setItem("mealdrop_demo_user", JSON.stringify(next));
+    setUser((u) => ({ ...u, ...patch }));
   }
 
   return (

@@ -1,22 +1,31 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(34, 31, 26, 0.55);
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
   padding: 20px;
+  background: rgba(34, 31, 26, 0.62);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .modal {
+  position: relative;
   width: 100%;
   max-width: 380px;
   padding: 28px;
-  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
-.modal h2 { font-size: 20px; margin-bottom: 18px; }
+.modal h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
 
 .modal-close {
   position: absolute;
@@ -24,6 +33,10 @@
   right: 16px;
   font-size: 20px;
   color: var(--muted);
+}
+
+.modal-close:hover {
+  color: var(--ink);
 }
 
 .field-label {
@@ -43,9 +56,15 @@
   background: var(--cream);
 }
 
-.field-input:focus { outline: none; border-color: var(--emerald); }
+.field-input:focus {
+  outline: none;
+  border-color: var(--emerald);
+  box-shadow: 0 0 0 3px var(--emerald-soft);
+}
 
-.modal .btn { margin-top: 16px; }
+.modal .btn {
+  margin-top: 16px;
+}
 
 .support-contacts {
   display: flex;
