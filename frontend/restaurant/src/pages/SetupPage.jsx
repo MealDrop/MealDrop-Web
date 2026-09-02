@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import "./styles/SetupPage.css";
 
 export default function SetupPage() {
-  const { setRestaurant, token } = useAuth();
+  const { setRestaurant } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
@@ -44,22 +44,19 @@ export default function SetupPage() {
     try {
       const created = await api.createRestaurant(payload);
       setRestaurant(created);
+      navigate("/dashboard");
     } catch (err) {
-      if (api.isBackendUnreachable(err) || token === "demo-token") {
-        setRestaurant({ id: "demo-restaurant", ...payload });
-      } else {
-        setSaving(false);
-        return setError(
-          err.response?.data?.message || "Could not create restaurant.",
-        );
-      }
+      setError(
+        err.response?.data?.message ||
+          "Could not create restaurant — check your connection and try again.",
+      );
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    navigate("/dashboard");
   }
 
   return (
-    <div className="page">
+    <div className="page setup-page">
       <div className="container setup-layout">
         <div className="card setup-card">
           <p className="eyebrow">Get started</p>

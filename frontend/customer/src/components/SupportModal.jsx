@@ -2,14 +2,17 @@ import { useState } from "react";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import "./styles/SupportModal.css";
 
+const SUPPORT_EMAIL = "help@mealdrop.app";
+
 export default function SupportModal({ onClose }) {
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
 
   function send(e) {
     e.preventDefault();
     if (!message.trim()) return;
-    setSent(true);
+    const subject = encodeURIComponent("MealDrop support request");
+    const body = encodeURIComponent(message);
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
   }
 
   return (
@@ -24,30 +27,28 @@ export default function SupportModal({ onClose }) {
           <a href="tel:+911234567890" className="support-contact">
             <Phone size={16} /> +91 12345 67890
           </a>
-          <a href="mailto:help@mealdrop.app" className="support-contact">
-            <Mail size={16} /> help@mealdrop.app
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="support-contact">
+            <Mail size={16} /> {SUPPORT_EMAIL}
           </a>
         </div>
 
-        {sent ? (
-          <p className="banner" style={{ marginTop: 18 }}>
-            Thanks — your message has been noted. We'll get back to you soon.
+        <form onSubmit={send}>
+          <label className="field-label">
+            <MessageCircle size={13} /> Tell us what's wrong
+          </label>
+          <textarea
+            className="field-input"
+            rows={4}
+            placeholder="Describe your issue..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <p className="field-hint">
+            Opens your email app with this pre-filled — there's no in-app ticket
+            system yet.
           </p>
-        ) : (
-          <form onSubmit={send}>
-            <label className="field-label">
-              <MessageCircle size={13} /> Tell us what's wrong
-            </label>
-            <textarea
-              className="field-input"
-              rows={4}
-              placeholder="Describe your issue..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button className="btn btn-primary btn-block">Send message</button>
-          </form>
-        )}
+          <button className="btn btn-primary btn-block">Send message</button>
+        </form>
       </div>
     </div>
   );

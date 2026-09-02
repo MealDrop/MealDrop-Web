@@ -6,26 +6,47 @@ const client = axios.create({
 });
 
 export function setAuthToken(token) {
-  if (token) client.defaults.headers.common.Authorization = `Bearer ${token}`;
-  else delete client.defaults.headers.common.Authorization;
-}
-
-export function isBackendUnreachable(err) {
-  return !err.response;
+  if (token) {
+    client.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete client.defaults.headers.common.Authorization;
+  }
 }
 
 const withId = (obj) => (obj ? { ...obj, id: obj._id || obj.id } : obj);
 
-// ---- auth ----
-export const requestOtp = (phone) =>
-  client.post("/auth/request-otp", { phone }).then((r) => r.data);
+export const requestOtp = (email, mode = "login") =>
+  client
+    .post("/auth/request-otp", {
+      email,
+      mode,
+    })
+    .then((r) => r.data);
 
-export const verifyOtp = (phone, otp, name, role) =>
-  client.post("/auth/verify-otp", { phone, otp, name, role }).then((r) => ({
-    token: r.data.token,
-    user: withId(r.data.user),
-    restaurant: withId(r.data.restaurant),
-  }));
+export const verifyOtp = (
+  email,
+  otp,
+  name,
+  role,
+  phone,
+  address,
+  mode = "login",
+) =>
+  client
+    .post("/auth/verify-otp", {
+      email,
+      otp,
+      name,
+      role,
+      phone,
+      address,
+      mode,
+    })
+    .then((r) => ({
+      token: r.data.token,
+      user: withId(r.data.user),
+      restaurant: withId(r.data.restaurant),
+    }));
 
 export const getMe = () =>
   client.get("/auth/me").then((r) => ({
@@ -38,7 +59,6 @@ export const updateProfile = (patch) =>
 
 export const deleteMyAccount = () => client.delete("/auth/account");
 
-// ---- restaurants ----
 export const getRestaurants = () =>
   client.get("/restaurants").then((r) => r.data.map(withId));
 
@@ -48,7 +68,6 @@ export const getRestaurant = (id) =>
     dishes: r.data.dishes.map(withId),
   }));
 
-// ---- reviews ----
 export const getReviews = (restaurantId) =>
   client
     .get(`/reviews/restaurant/${restaurantId}`)
@@ -56,14 +75,36 @@ export const getReviews = (restaurantId) =>
 
 export const createReview = (restaurantId, rating, comment) =>
   client
-    .post("/reviews", { restaurant: restaurantId, rating, comment })
+    .post("/reviews", {
+      restaurant: restaurantId,
+      rating,
+      comment,
+    })
     .then((r) => withId(r.data));
 
-// ---- orders ----
 export const placeOrder = (payload) =>
   client.post("/orders", payload).then((r) => withId(r.data));
 
 export const getMyOrders = () =>
   client.get("/orders/mine").then((r) => r.data.map(withId));
+
+export const getActiveOrders = () =>
+  client.get("/orders/mine/active").then((r) => r.data.map(withId));
+
+export const getOrderHistory = () =>
+  client.get("/orders/mine/history").then((r) => r.data.map(withId));
+
+export const getOrder = (orderId) =>
+  client.get(`/orders/${orderId}`).then((r) => withId(r.data));
+
+export const cancelOrder = (orderId, reason = "Cancelled by customer") =>
+  client
+    .put(`/orders/${orderId}/cancel`, {
+      note: reason,
+    })
+    .then((r) => withId(r.data));
+
+export const smartSearch = (query) =>
+  client.post("/search", { query }).then((r) => r.data);
 
 export default client;

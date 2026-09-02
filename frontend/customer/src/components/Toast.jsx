@@ -3,9 +3,7 @@ import "./styles/Toast.css";
 
 export default function Toast() {
   const { toasts } = useCart();
-  if (!toasts.length) {
-    return null;
-  }
+  if (!toasts.length) return null;
   return (
     <div className="toast-stack">
       {toasts.map((t) => (

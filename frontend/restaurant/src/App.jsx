@@ -1,32 +1,50 @@
 import { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+
 import Header from "./components/Header.jsx";
 import AuthModal from "./components/AuthModal.jsx";
 import SupportModal from "./components/SupportModal.jsx";
+
 import SetupPage from "./pages/SetupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
+
 import { useAuth } from "./context/AuthContext.jsx";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="spinner" />;
-  if (!user) return <Navigate to="/" replace />;
+
+  if (loading) {
+    return <div className="spinner" />;
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 }
 
 export default function App() {
   const { user, restaurant, loading } = useAuth();
+
   const [showLogin, setShowLogin] = useState(false);
+
   const [showSupport, setShowSupport] = useState(false);
 
-  const openLogin = () => setShowLogin(true);
-  const openSupport = () => setShowSupport(true);
+  function openLogin() {
+    setShowLogin(true);
+  }
+
+  function openSupport() {
+    setShowSupport(true);
+  }
 
   return (
     <>
       <Header onLoginClick={openLogin} onSupportClick={openSupport} />
+
       <Routes>
         <Route
           path="/"
@@ -40,6 +58,7 @@ export default function App() {
             )
           }
         />
+
         <Route
           path="/setup"
           element={
@@ -48,6 +67,7 @@ export default function App() {
             </RequireAuth>
           }
         />
+
         <Route
           path="/dashboard"
           element={
@@ -56,6 +76,7 @@ export default function App() {
             </RequireAuth>
           }
         />
+
         <Route
           path="/orders"
           element={
@@ -64,6 +85,7 @@ export default function App() {
             </RequireAuth>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -78,6 +100,7 @@ export default function App() {
       </Routes>
 
       {showLogin && <AuthModal onClose={() => setShowLogin(false)} />}
+
       {showSupport && <SupportModal onClose={() => setShowSupport(false)} />}
     </>
   );
@@ -88,14 +111,20 @@ function Landing({ onLoginClick }) {
     <div className="page">
       <div className="container landing">
         <p className="eyebrow">MealDrop for restaurants</p>
+
         <h1>Reach more customers in Barasat.</h1>
+
         <p
           className="muted"
-          style={{ maxWidth: 480, margin: "10px auto 26px" }}
+          style={{
+            maxWidth: 480,
+            margin: "10px auto 26px",
+          }}
         >
-          List your menu, manage orders, and control your own open hours — all
-          from one dashboard.
+          List your menu, manage orders, and control your restaurant from one
+          simple dashboard.
         </p>
+
         <button className="btn btn-primary" onClick={onLoginClick}>
           Get started
         </button>

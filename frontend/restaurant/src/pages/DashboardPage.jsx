@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Plus, Pencil, Trash2, Coffee } from "lucide-react";
 import * as api from "../api.js";
-import { demoDishes } from "../data/demoData.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import DishFormModal from "../components/DishFormModal.jsx";
 import HolidayModal from "../components/HolidayModal.jsx";
@@ -12,131 +11,93 @@ export default function DashboardPage() {
   const { restaurant, setRestaurant } = useAuth();
   const [dishes, setDishes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [editing, setEditing] = useState(null); // dish being edited, or "new"
   const [holidayOpen, setHolidayOpen] = useState(false);
-  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
     if (!restaurant) return;
     api
       .getDishes(restaurant.id)
       .then(setDishes)
-      .catch((err) => {
-        if (api.isBackendUnreachable(err)) {
-          setOffline(true);
-          setDishes(demoDishes);
-        }
-      })
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, [restaurant?.id]);
 
   if (!restaurant) return <Navigate to="/setup" replace />;
 
   async function toggleOpen() {
-    const patch = { isOpen: !restaurant.isOpen, closedUntil: null };
     try {
-      const updated = await api.updateRestaurant(restaurant.id, patch);
+      const updated = await api.updateRestaurant(restaurant.id, { isOpen: !restaurant.isOpen, closedUntil: null });
       setRestaurant(updated);
     } catch (err) {
-      setRestaurant(patch);
+      alert(err.response?.data?.message || "Could not update — check your connection and try again.");
     }
   }
 
   async function saveHoliday(date) {
-    const patch = { isOpen: false, closedUntil: date };
     try {
-      const updated = await api.updateRestaurant(restaurant.id, patch);
+      const updated = await api.updateRestaurant(restaurant.id, { isOpen: false, closedUntil: date });
       setRestaurant(updated);
+      setHolidayOpen(false);
     } catch (err) {
-      setRestaurant(patch);
+      alert(err.response?.data?.message || "Could not save — check your connection and try again.");
     }
-    setHolidayOpen(false);
   }
 
   async function saveDish(form) {
-    if (editing && editing !== "new") {
-      try {
+    try {
+      if (editing && editing !== "new") {
         const updated = await api.updateDish(editing.id, form);
         setDishes((ds) => ds.map((d) => (d.id === editing.id ? updated : d)));
-      } catch (err) {
-        setDishes((ds) =>
-          ds.map((d) => (d.id === editing.id ? { ...d, ...form } : d)),
-        );
-      }
-    } else {
-      try {
-        const created = await api.createDish({
-          ...form,
-          restaurant: restaurant.id,
-        });
+      } else {
+        const created = await api.createDish({ ...form, restaurant: restaurant.id });
         setDishes((ds) => [...ds, created]);
-      } catch (err) {
-        setDishes((ds) => [...ds, { ...form, id: `local-${Date.now()}` }]);
       }
+      setEditing(null);
+    } catch (err) {
+      alert(err.response?.data?.message || "Could not save this dish — check your connection and try again.");
     }
-    setEditing(null);
   }
 
   async function removeDish(id) {
     if (!window.confirm("Delete this dish?")) return;
     try {
       await api.deleteDish(id);
+      setDishes((ds) => ds.filter((d) => d.id !== id));
     } catch (err) {
-      // offline — still remove locally
+      alert(err.response?.data?.message || "Could not delete this dish — check your connection and try again.");
     }
-    setDishes((ds) => ds.filter((d) => d.id !== id));
   }
 
   return (
-    <div className="page">
+    <div className="page dashboard-page">
       <div className="container">
-        {offline && (
-          <p className="banner">
-            Backend not reachable — showing a demo menu; changes stay local.
-          </p>
-        )}
+        {loadError && <p className="banner banner-error">Couldn't load your menu — check your connection and refresh.</p>}
 
         <div className="dash-header card">
           <div>
             <p className="eyebrow">{(restaurant.cuisines || []).join(" · ")}</p>
             <h1>{restaurant.name}</h1>
             <p className="muted">{restaurant.address}</p>
-            <p className="muted">
-              {restaurant.openingTime} – {restaurant.closingTime}
-            </p>
+            <p className="muted">{restaurant.openingTime} – {restaurant.closingTime}</p>
           </div>
           <div className="dash-header-actions">
-            <button
-              className="btn btn-outline btn-sm"
-              onClick={() => setHolidayOpen(true)}
-            >
+            <button className="btn btn-outline btn-sm" onClick={() => setHolidayOpen(true)}>
               <Coffee size={15} /> Take a break
             </button>
-            <button
-              className={`switch ${restaurant.isOpen ? "on" : ""}`}
-              onClick={toggleOpen}
-              aria-label="Toggle open"
-            >
+            <button className={`switch ${restaurant.isOpen ? "on" : ""}`} onClick={toggleOpen} aria-label="Toggle open">
               <span className="switch-knob" />
             </button>
-            <span
-              className={`badge ${restaurant.isOpen ? "" : "badge-closed"}`}
-            >
-              {restaurant.isOpen
-                ? "Open"
-                : restaurant.closedUntil
-                  ? `Closed till ${restaurant.closedUntil}`
-                  : "Closed"}
+            <span className={`badge ${restaurant.isOpen ? "" : "badge-closed"}`}>
+              {restaurant.isOpen ? "Open" : restaurant.closedUntil ? `Closed till ${restaurant.closedUntil}` : "Closed"}
             </span>
           </div>
         </div>
 
         <div className="results-head">
           <h2 className="section-title">Menu</h2>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => setEditing("new")}
-          >
+          <button className="btn btn-primary btn-sm" onClick={() => setEditing("new")}>
             <Plus size={15} /> Add dish
           </button>
         </div>
@@ -155,22 +116,15 @@ export default function DashboardPage() {
                 {d.imageUrl ? (
                   <img className="dish-thumb" src={d.imageUrl} alt={d.name} />
                 ) : (
-                  <div className="dish-thumb-placeholder">{d.name[0]}</div>
+                  <div className="dish-thumb-placeholder">{(d.name || "D")[0].toUpperCase()}</div>
                 )}
                 <div className="dish-manage-info">
                   <h4>{d.name}</h4>
-                  <p className="muted">
-                    {d.category} · ₹{d.price}
-                    {!d.isAvailable && " · Unavailable"}
-                  </p>
+                  <p className="muted">{d.category} · ₹{d.price}{!d.isAvailable && " · Unavailable"}</p>
                 </div>
                 <div className="dish-manage-actions">
-                  <button className="btn-icon" onClick={() => setEditing(d)}>
-                    <Pencil size={16} />
-                  </button>
-                  <button className="btn-icon" onClick={() => removeDish(d.id)}>
-                    <Trash2 size={16} />
-                  </button>
+                  <button className="btn-icon" onClick={() => setEditing(d)}><Pencil size={16} /></button>
+                  <button className="btn-icon" onClick={() => removeDish(d.id)}><Trash2 size={16} /></button>
                 </div>
               </div>
             ))}
@@ -186,11 +140,7 @@ export default function DashboardPage() {
         />
       )}
       {holidayOpen && (
-        <HolidayModal
-          current={restaurant.closedUntil}
-          onClose={() => setHolidayOpen(false)}
-          onSave={saveHoliday}
-        />
+        <HolidayModal current={restaurant.closedUntil} onClose={() => setHolidayOpen(false)} onSave={saveHoliday} />
       )}
     </div>
   );

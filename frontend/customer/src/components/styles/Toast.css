@@ -12,9 +12,22 @@
   background: var(--ink);
   color: #fff;
   padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   font-size: 13.5px;
   font-weight: 500;
   box-shadow: var(--shadow-lg);
   animation: fadeUp 0.2s ease;
+}
+
+@media (max-width: 520px) {
+  .toast-stack {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .toast {
+    width: 100%;
+  }
 }
